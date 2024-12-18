@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Treasure Hunt</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        const hash = "064b94cb40af0e0eae61579134350c3fba4c606c16bfc2ef0ede4686b4067615";
+
+        async function hashString(str) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(str);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            return Array.from(new Uint8Array(hashBuffer))
+                .map(b => b.toString(16).padStart(2, "0"))
+                .join("");
+        }
+
+        async function checkString() {
+            const currentdate = new Date();
+            const teamName = document.getElementById("teamName").value.trim();
+            const code = document.getElementById("code").value.trim();
+            const result = document.getElementById("result");
+            const info = document.getElementById("info");
+
+            const hashedInput = await hashString(code.toUpperCase());
+
+            if (hashedInput === hash) {
+                result.textContent =
+                    "CONGRATS! Team " +
+                    teamName +
+                    " completed at " +
+                    currentdate.getHours() +
+                    ":" +
+                    currentdate.getMinutes() +
+                    ":" +
+                    currentdate.getSeconds();
+                result.style.color = "green";
+                info.textContent = "Please take a photo of the above message as proof.";
+                info.style.color = "red";
+            } else {
+                result.textContent = "Try again";
+                result.style.color = "red";
+                info.textContent = "";
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <img src="https://www.commvault.com/wp-content/uploads/2023/11/cropped-favicon-commvault-1.png" alt="Commvault Logo" class="logo">
+            <h1>Christmas Treasure Hunt</h1>
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+        <section class="intro">
+            <div class="container">
+                <h2>Welcome to the Christmas Treasure Hunt final stage</h2>
+
+                <label for="teamName">Enter team name:</label>
+                <input type="text" id="teamName" required>
+                <br><br>
+                <label for="code">Enter the first letter from the first clue, the second letter from the second clue, and so on (ignore spaces and special characters):</label>
+                <input type="text" id="code" placeholder="Enter code (case-insensitive)">
+                <button onclick="checkString()">Check Code</button>
+
+                <div id="result"></div>
+                <br><br>
+                <h1 id="info"></h1>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
